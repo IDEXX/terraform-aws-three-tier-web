@@ -1,0 +1,19 @@
+name: Infracost
+
+on:
+  pull_request:
+
+jobs:
+  infracost:
+    name: Infracost
+    uses: idexx-labs/github-terraform-called-workflows/.github/workflows/infracost-called.yml@v1.7.0
+    with:
+      pull_request_number: ${{ github.event.pull_request.number }}
+      pull_request_base_branch: ${{ github.event.pull_request.base.ref }}
+      pull_request_head_branch: ${{ github.event.pull_request.head.ref }}
+      repository_name: ${{ github.event.repository.full_name }}
+      trigger_event: ${{ github.event_name }}
+    secrets:
+      git_token: ${{ secrets.GITHUB_TOKEN }}
+      infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
+      ssh_key: ${{ secrets.IDEXX_RO_SSH_PRIV_KEY }}

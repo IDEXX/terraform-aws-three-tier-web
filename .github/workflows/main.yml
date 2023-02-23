@@ -1,0 +1,80 @@
+name: Kitchen Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+# Azure Credential Setup
+
+# env:
+#   ARM_CLIENT_ID: ${{ secrets.AZURE_TF_CHILD_MODULE_GITHUB_SA_ID }}
+#   ARM_CLIENT_SECRET: ${{ secrets.AZURE_TF_CHILD_MODULE_GITHUB_SA_KEY }}
+#   ARM_SUBSCRIPTION_ID: 74db3855-bcb5-48fe-9cd5-61e3d8d24be2
+#   ARM_TENANT_ID: f63b8b05-3357-43b9-bc80-230782752e4b
+
+#   # Inspec and Terraform require different variable names
+
+#   AZURE_CLIENT_ID: ${{ secrets.AZURE_TF_CHILD_MODULE_GITHUB_SA_ID }}
+#   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_TF_CHILD_MODULE_GITHUB_SA_KEY }}
+#   AZURE_SUBSCRIPTION_ID: 74db3855-bcb5-48fe-9cd5-61e3d8d24be2
+#   AZURE_TENANT_ID: f63b8b05-3357-43b9-bc80-230782752e4b
+#   TFSTATE_ACCESS_KEY: ${{ secrets.AZURE_TF_CHILD_MODULE_GITHUB_STORAGE_KEY }}
+
+jobs:
+  default-job:
+    name: Default Job
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: [self-hosted, kitchen]
+
+    steps:
+
+      # GitHub - Checkout
+      # https://github.com/marketplace/actions/checkout
+
+      - name: GitHub Checkout
+        uses: actions/checkout@v3.3.0
+
+      # Amazon Web Services - Configure AWS credentials for Github actions.
+      # https://github.com/marketplace/actions/configure-aws-credentials-action-for-github-actions
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v1.7.0
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_TF_CHILD_MODULE_GITHUB_SA_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_TF_CHILD_MODULE_GITHUB_SA_KEY }}
+      #     aws-region: us-east-1
+
+      # Google Cloud Platform - Setup gcloud environment
+      # https://github.com/marketplace/actions/set-up-gcloud-cloud-sdk-environment
+
+      # - name: Google Cloud Platform CLI Setup
+      #   uses: google-github-actions/setup-gcloud@v0.6.0
+      #   with:
+      #     service_account_key: ${{ secrets.GCP_MODULE_DEV_SA_KEY }}
+      #     export_default_credentials: true
+
+      # Kitchen Terraform
+      # https://github.com/newcontext-oss/kitchen-terraform
+
+      - name: Run Kitchen Converge
+        run: |
+          echo "bundle exec kitchen converge"
+          # bundle exec kitchen converge
+
+      - name: Run Kitchen Verify
+        run: |
+          echo "bundle exec kitchen verify"
+          # bundle exec kitchen verify
+
+      - name: Run Kitchen Destroy
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          echo "bundle exec kitchen destroy"
+          # bundle exec kitchen destroy
